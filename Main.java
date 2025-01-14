@@ -2,17 +2,26 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Random random = new Random();
+
+        List<String> playerNames = new ArrayList<>();
+        List<Integer> playerScores = new ArrayList<>();
+
         while (true) {
+            System.out.println("Welcome to Battleship!");
             System.out.print("Enter your name: ");
             String playerName = scanner.nextLine();
+            playerNames.add(playerName);
+            String[][] hiddenBoard = new String[7][7];
+            String[][] playerBoard = new String[7][7];
+            initializeBoards(hiddenBoard,playerBoard);
 
-            char[][] field = new char[7][7];
-            String[][] displayField = new String[7][7];
-            for (int i = 0; i < 7; i++) {
-                Arrays.fill(field[i], ".");
-                Arrays.fill(displayField[i], "🌊");
-            }
+
+        }
+    }
+    static void initializeBoards(String[][] hiddenBoard, String[][] playerBoard) {
+        for (int i = 0; i < 7; i++) {
+            Arrays.fill(hiddenBoard[i], "🌊");
+            Arrays.fill(playerBoard[i], "🌊");
         }
     }
 }

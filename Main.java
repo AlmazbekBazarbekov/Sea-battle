@@ -22,11 +22,34 @@ public class Main {
                 displayBoard(playerBoard);
                 System.out.print("Enter your shot (e.g., B3): ");
                 String input = scanner.nextLine().toUpperCase();
+                if (!isValidShot(input)) {
+                    System.out.println("Invalid input. Please try again.");
+                    continue;
+                }
+
+                int row = input.charAt(0) - 'A';
+                int col = input.charAt(1) - '1';
+
+                if (!playerBoard[row][col].equals("🌊")) {
+                    System.out.println("You have already shot here. Please try again.");
+                    continue;
+                }
+
+                shots++;
+                if (hiddenBoard[row][col].equals("🚢")) {
+                    playerBoard[row][col] = "🔥";
+                    hiddenBoard[row][col] = "X";
+                    hits++;
+                    System.out.println("Hit!");
+                } 
+                else {
+                    playerBoard[row][col] = "❌";
+                    System.out.println("Miss!");
+                }
             }
-
-
         }
     }
+
     static void initializeBoards(String[][] hiddenBoard, String[][] playerBoard) {
         for (int i = 0; i < 7; i++) {
             Arrays.fill(hiddenBoard[i], "🌊");

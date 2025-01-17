@@ -17,7 +17,12 @@ public class Main {
             int shots = 0;
             int hits = 0;
             int totalShipParts = 11;
-            
+
+            while (hits < totalShipParts) {
+                displayBoard(playerBoard);
+                System.out.print("Enter your shot (e.g., B3): ");
+                String input = scanner.nextLine().toUpperCase();
+            }
 
 
         }
@@ -37,5 +42,11 @@ public class Main {
             }
             System.out.println();
         }
+    }
+    static boolean isValidShot(String input) {
+        if (input.length() != 2) return false;
+        char row = input.charAt(0);
+        char col = input.charAt(1);
+        return row >= 'A' && row <= 'G' && col >= '1' && col <= '7';
     }
 }

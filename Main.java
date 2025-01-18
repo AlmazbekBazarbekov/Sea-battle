@@ -46,7 +46,21 @@ public class Main {
                     playerBoard[row][col] = "❌";
                     System.out.println("Miss!");
                 }
+            System.out.println("Congratulations, " + playerName + "! You won in " + shots + " shots.");
+            playerScores.add(shots);
+    
+            System.out.print("Do you want to play again? (yes/no): ");
+            if (!scanner.nextLine().equalsIgnoreCase("yes")) break;
             }
+            System.out.println("Final Scores:");
+            List<Integer> sortedScores = new ArrayList<>(playerScores);
+            Collections.sort(sortedScores);
+            for (int i = 0; i < sortedScores.size(); i++) {
+                int score = sortedScores.get(i);
+                int index = playerScores.indexOf(score);
+                System.out.println(playerNames.get(index) + ": " + score + " shots");
+            }
+            scanner.close();
         }
     }
 

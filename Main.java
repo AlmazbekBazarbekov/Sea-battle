@@ -86,4 +86,22 @@ public class Main {
         char col = input.charAt(1);
         return row >= 'A' && row <= 'G' && col >= '1' && col <= '7';
     }
+    static void placeShips(String[][] board) {
+        placeShip(board, 3);
+        placeShip(board, 2);
+        placeShip(board, 2);
+        placeShip(board, 1);
+        placeShip(board, 1);
+        placeShip(board, 1);
+        placeShip(board, 1);
+    }
+    static void placeShip(String[][] board, int size) {
+        Random random = new Random();
+        boolean placed = false;
+        while (!placed) {
+            int row = random.nextInt(7);
+            int col = random.nextInt(7);
+            boolean horizontal = random.nextBoolean();
+        }
+    }
 }

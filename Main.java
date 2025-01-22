@@ -27,6 +27,7 @@ public class Main {
                 displayBoard(playerBoard);
                 System.out.print("Enter your shot (e.g., B3): ");
                 String shotInput = scanner.nextLine().toUpperCase();
+                clearScreen();
 
                 if (!isValidShot(shotInput)) {
                     System.out.println("Invalid input. Please try again.");
@@ -50,7 +51,9 @@ public class Main {
                 } else {
                     playerBoard[shotRow][shotCol] = "❌";
                     System.out.println("Miss!");
+                    
                 }
+                
             }
 
             System.out.println("Congratulations, " + playerName + "! You won in " + shotsTaken + " shots.");
@@ -159,5 +162,9 @@ public class Main {
             System.out.println();
         }
     }
+    public static void clearScreen() {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+    }  
 }
 

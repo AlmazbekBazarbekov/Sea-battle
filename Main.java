@@ -48,6 +48,9 @@ public class Main {
                     hiddenBoard[shotRow][shotCol] = "X";
                     hitsCount++;
                     System.out.println("Hit!");
+                    if (isShipSunk(hiddenBoard, playerBoard)) {
+                        System.out.println("You sunk a ship!");
+                    }
                 } else {
                     playerBoard[shotRow][shotCol] = "❌";
                     System.out.println("Miss!");
@@ -162,9 +165,52 @@ public class Main {
             System.out.println();
         }
     }
-    public static void clearScreen() {  
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();  
-    }  
-}
+    static boolean isShipSunk(String[][] hiddenBoard, String[][] playerBoard) {
+        boolean[][] visited = new boolean[7][7];
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 7; col++) {
+                if (hiddenBoard[row][col].equals("X") && !visited[row][col]) {
+                    List<int[]> shipParts = new ArrayList<>();
+                    exploreShip(hiddenBoard, row, col, visited, shipParts);
+
+                    boolean allHit = true;
+                    for (int[] part : shipParts) {
+                        if (!hiddenBoard[part[0]][part[1]].equals("X")) {
+                            allHit = false;
+                            break;
+                        }
+                    }
+
+                    if (allHit) {
+                        for (int[] part : shipParts) {
+                            playerBoard[part[0]][part[1]] = "⚓";
+                            hiddenBoard[part[0]][part[1]] = "⚓";
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    static void exploreShip(String[][] board, int row, int col, boolean[][] visited, List<int[]> shipParts) {
+        if (row < 0 || row >= 7 || col < 0 || col >= 7 || visited[row][col] || (!board[row][col].equals("🚢") && !board[row][col].equals("X"))) {
+            return;
+        }
+
+        visited[row][col] = true;
+        shipParts.add(new int[]{row, col});
+
+        exploreShip(board, row + 1, col, visited, shipParts);
+        exploreShip(board, row - 1, col, visited, shipParts);
+        exploreShip(board, row, col + 1, visited, shipParts);
+        exploreShip(board, row, col - 1, visited, shipParts);
+    }
+    static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+    }
+    
 

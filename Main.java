@@ -1,6 +1,13 @@
 import java.util.*;
 
 public class Main {
+    private final static int BOARD_SIZE = 7;
+    private final static String EMPTY_CELL = "🌊";
+    private final static String SHIP_CELL = "🚢";
+    private final static String HIT_CELL = "🔥";
+    private final static String MISS_CELL = "❌";
+    private final static String SUNK_CELL = "⚓";
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -13,8 +20,8 @@ public class Main {
             String playerName = scanner.nextLine();
             playerNames.add(playerName);
 
-            String[][] hiddenBoard = new String[7][7];
-            String[][] playerBoard = new String[7][7];
+            String[][] hiddenBoard = new String[BOARD_SIZE][BOARD_SIZE];
+            String[][] playerBoard = new String[BOARD_SIZE][BOARD_SIZE];
             initializeBoards(hiddenBoard, playerBoard);
 
             placeShips(hiddenBoard);
@@ -37,14 +44,14 @@ public class Main {
                 int shotRow = shotInput.charAt(0) - 'A';
                 int shotCol = shotInput.charAt(1) - '1';
 
-                if (!playerBoard[shotRow][shotCol].equals("🌊")) {
+                if (!playerBoard[shotRow][shotCol].equals(EMPTY_CELL)) {
                     System.out.println("You have already shot here. Please try again.");
                     continue;
                 }
 
                 shotsTaken++;
-                if (hiddenBoard[shotRow][shotCol].equals("🚢")) {
-                    playerBoard[shotRow][shotCol] = "🔥";
+                if (hiddenBoard[shotRow][shotCol].equals(SHIP_CELL)) {
+                    playerBoard[shotRow][shotCol] = HIT_CELL;
                     hiddenBoard[shotRow][shotCol] = "X";
                     hitsCount++;
                     System.out.println("Hit!");
@@ -52,11 +59,9 @@ public class Main {
                         System.out.println("You sunk a ship!");
                     }
                 } else {
-                    playerBoard[shotRow][shotCol] = "❌";
+                    playerBoard[shotRow][shotCol] = MISS_CELL;
                     System.out.println("Miss!");
-                    
                 }
-                
             }
 
             System.out.println("Congratulations, " + playerName + "! You won in " + shotsTaken + " shots.");
@@ -69,8 +74,7 @@ public class Main {
         System.out.println("Final Scores:");
         List<Integer> sortedScores = new ArrayList<>(playerScores);
         Collections.sort(sortedScores);
-        for (int i = 0; i < sortedScores.size(); i++) {
-            int score = sortedScores.get(i);
+        for (int score : sortedScores) {
             int index = playerScores.indexOf(score);
             System.out.println(playerNames.get(index) + ": " + score + " shots");
         }
@@ -79,17 +83,17 @@ public class Main {
     }
 
     static void initializeBoards(String[][] hiddenBoard, String[][] playerBoard) {
-        for (int row = 0; row < 7; row++) {
-            Arrays.fill(hiddenBoard[row], "🌊");
-            Arrays.fill(playerBoard[row], "🌊");
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            Arrays.fill(hiddenBoard[row], EMPTY_CELL);
+            Arrays.fill(playerBoard[row], EMPTY_CELL);
         }
     }
 
     static void placeShips(String[][] board) {
-        placeShip(board, 3); 
-        placeShip(board, 2); 
+        placeShip(board, 3);
         placeShip(board, 2);
-        placeShip(board, 1); 
+        placeShip(board, 2);
+        placeShip(board, 1);
         placeShip(board, 1);
         placeShip(board, 1);
         placeShip(board, 1);
@@ -100,16 +104,16 @@ public class Main {
         boolean shipPlaced = false;
 
         while (!shipPlaced) {
-            int startRow = random.nextInt(7);
-            int startCol = random.nextInt(7);
+            int startRow = random.nextInt(BOARD_SIZE);
+            int startCol = random.nextInt(BOARD_SIZE);
             boolean isHorizontal = random.nextBoolean();
 
             if (canPlaceShip(board, startRow, startCol, shipSize, isHorizontal)) {
                 for (int part = 0; part < shipSize; part++) {
                     if (isHorizontal) {
-                        board[startRow][startCol + part] = "🚢";
+                        board[startRow][startCol + part] = SHIP_CELL;
                     } else {
-                        board[startRow + part][startCol] = "🚢";
+                        board[startRow + part][startCol] = SHIP_CELL;
                     }
                 }
                 shipPlaced = true;
@@ -119,18 +123,10 @@ public class Main {
 
     static boolean canPlaceShip(String[][] board, int row, int col, int size, boolean horizontal) {
         for (int part = 0; part < size; part++) {
-            int currentRow;
-            int currentCol;
+            int currentRow = horizontal ? row : row + part;
+            int currentCol = horizontal ? col + part : col;
 
-            if (horizontal) {
-                currentRow = row;
-                currentCol = col + part;
-            } else {
-                currentRow = row + part;
-                currentCol = col;
-            }
-
-            if (currentRow < 0 || currentRow >= 7 || currentCol < 0 || currentCol >= 7 || !board[currentRow][currentCol].equals("🌊")) {
+            if (currentRow < 0 || currentRow >= BOARD_SIZE || currentCol < 0 || currentCol >= BOARD_SIZE || !board[currentRow][currentCol].equals(EMPTY_CELL)) {
                 return false;
             }
 
@@ -139,7 +135,7 @@ public class Main {
                     int adjacentRow = currentRow + rowOffset;
                     int adjacentCol = currentCol + colOffset;
 
-                    if (adjacentRow >= 0 && adjacentRow < 7 && adjacentCol >= 0 && adjacentCol < 7 && board[adjacentRow][adjacentCol].equals("🚢")) {
+                    if (adjacentRow >= 0 && adjacentRow < BOARD_SIZE && adjacentCol >= 0 && adjacentCol < BOARD_SIZE && board[adjacentRow][adjacentCol].equals(SHIP_CELL)) {
                         return false;
                     }
                 }
@@ -157,22 +153,22 @@ public class Main {
 
     static void displayBoard(String[][] board) {
         System.out.print("  1 2 3 4 5 6 7\n");
-        for (int row = 0; row < 7; row++) {
+        for (int row = 0; row < BOARD_SIZE; row++) {
             System.out.print((char) ('A' + row) + " ");
-            for (int col = 0; col < 7; col++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
                 System.out.print(board[row][col] + " ");
             }
             System.out.println();
         }
     }
+
     static boolean isShipSunk(String[][] hiddenBoard, String[][] playerBoard) {
-        boolean[][] visited = new boolean[7][7];
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 7; col++) {
+        boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
                 if (hiddenBoard[row][col].equals("X") && !visited[row][col]) {
                     List<int[]> shipParts = new ArrayList<>();
-                    exploreShip(hiddenBoard, row, col, visited, shipParts);
-
+                    sunkShip(playerBoard, row, col, visited, shipParts);
                     boolean allHit = true;
                     for (int[] part : shipParts) {
                         if (!hiddenBoard[part[0]][part[1]].equals("X")) {
@@ -183,8 +179,8 @@ public class Main {
 
                     if (allHit) {
                         for (int[] part : shipParts) {
-                            playerBoard[part[0]][part[1]] = "⚓";
-                            hiddenBoard[part[0]][part[1]] = "⚓";
+                            playerBoard[part[0]][part[1]] = SUNK_CELL;
+                            hiddenBoard[part[0]][part[1]] = SUNK_CELL;
                         }
                         return true;
                     }
@@ -194,23 +190,22 @@ public class Main {
         return false;
     }
 
-    static void exploreShip(String[][] board, int row, int col, boolean[][] visited, List<int[]> shipParts) {
-        if (row < 0 || row >= 7 || col < 0 || col >= 7 || visited[row][col] || (!board[row][col].equals("🚢") && !board[row][col].equals("X"))) {
+    static void sunkShip(String[][] board, int row, int col, boolean[][] visited, List<int[]> shipParts) {
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE || visited[row][col] || (!board[row][col].equals(SHIP_CELL) && !board[row][col].equals("X"))) {
             return;
         }
 
         visited[row][col] = true;
         shipParts.add(new int[]{row, col});
 
-        exploreShip(board, row + 1, col, visited, shipParts);
-        exploreShip(board, row - 1, col, visited, shipParts);
-        exploreShip(board, row, col + 1, visited, shipParts);
-        exploreShip(board, row, col - 1, visited, shipParts);
+        sunkShip(board, row, col, visited, shipParts);
+        sunkShip(board, row, col, visited, shipParts);
+        sunkShip(board, row, col, visited, shipParts);
+        sunkShip(board, row, col, visited, shipParts);
     }
+
     static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
-    }
-    
-
+}

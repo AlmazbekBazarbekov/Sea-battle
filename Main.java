@@ -43,6 +43,7 @@ public class Main {
 
                 int shotRow = shotInput.charAt(0) - 'A';
                 int shotCol = shotInput.charAt(1) - '1';
+                boolean turnToHit = hiddenBoard[shotRow][shotCol].equals(SHIP_CELL);
 
                 if (!playerBoard[shotRow][shotCol].equals(EMPTY_CELL)) {
                     System.out.println("You have already shot here. Please try again.");
@@ -50,7 +51,7 @@ public class Main {
                 }
 
                 shotsTaken++;
-                if (hiddenBoard[shotRow][shotCol].equals(SHIP_CELL)) {
+                if (turnToHit) {
                     playerBoard[shotRow][shotCol] = HIT_CELL;
                     hiddenBoard[shotRow][shotCol] = "X";
                     hitsCount++;
@@ -125,8 +126,8 @@ public class Main {
         for (int part = 0; part < size; part++) {
             int currentRow = horizontal ? row : row + part;
             int currentCol = horizontal ? col + part : col;
-
-            if (currentRow < 0 || currentRow >= BOARD_SIZE || currentCol < 0 || currentCol >= BOARD_SIZE || !board[currentRow][currentCol].equals(EMPTY_CELL)) {
+            boolean placeCondition1 = currentRow < 0 || currentRow >= BOARD_SIZE || currentCol < 0 || currentCol >= BOARD_SIZE || !board[currentRow][currentCol].equals(EMPTY_CELL);
+            if (placeCondition1) {
                 return false;
             }
 
@@ -134,8 +135,9 @@ public class Main {
                 for (int colOffset = -1; colOffset <= 1; colOffset++) {
                     int adjacentRow = currentRow + rowOffset;
                     int adjacentCol = currentCol + colOffset;
+                    boolean placeCondition2 = adjacentRow >= 0 && adjacentRow < BOARD_SIZE && adjacentCol >= 0 && adjacentCol < BOARD_SIZE && board[adjacentRow][adjacentCol].equals(SHIP_CELL);
 
-                    if (adjacentRow >= 0 && adjacentRow < BOARD_SIZE && adjacentCol >= 0 && adjacentCol < BOARD_SIZE && board[adjacentRow][adjacentCol].equals(SHIP_CELL)) {
+                    if (placeCondition2) {
                         return false;
                     }
                 }
@@ -152,7 +154,7 @@ public class Main {
     }
 
     static void displayBoard(String[][] board) {
-        System.out.print("  1 2 3 4 5 6 7\n");
+        System.out.print("   1  2  3  4  5  6  7\n");
         for (int row = 0; row < BOARD_SIZE; row++) {
             System.out.print((char) ('A' + row) + " ");
             for (int col = 0; col < BOARD_SIZE; col++) {
@@ -166,12 +168,14 @@ public class Main {
         boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                if (hiddenBoard[row][col].equals("X") && !visited[row][col]) {
+                boolean sunkCondition1 = hiddenBoard[row][col].equals("X") && !visited[row][col];
+                if (sunkCondition1) {
                     List<int[]> shipParts = new ArrayList<>();
-                    sunkShip(playerBoard, row, col, visited, shipParts);
+                    sunkShip(hiddenBoard, row, col, visited, shipParts);
                     boolean allHit = true;
                     for (int[] part : shipParts) {
-                        if (!hiddenBoard[part[0]][part[1]].equals("X")) {
+                        boolean turnToSunk = !hiddenBoard[part[0]][part[1]].equals("X");
+                        if (turnToSunk) {
                             allHit = false;
                             break;
                         }
@@ -191,17 +195,18 @@ public class Main {
     }
 
     static void sunkShip(String[][] board, int row, int col, boolean[][] visited, List<int[]> shipParts) {
-        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE || visited[row][col] || (!board[row][col].equals(SHIP_CELL) && !board[row][col].equals("X"))) {
+        boolean check = row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE || visited[row][col] || (!board[row][col].equals(SHIP_CELL) && !board[row][col].equals("X"));
+        if (check) {
             return;
         }
 
         visited[row][col] = true;
         shipParts.add(new int[]{row, col});
 
-        sunkShip(board, row, col, visited, shipParts);
-        sunkShip(board, row, col, visited, shipParts);
-        sunkShip(board, row, col, visited, shipParts);
-        sunkShip(board, row, col, visited, shipParts);
+        sunkShip(board, row - 1, col, visited, shipParts);
+        sunkShip(board, row + 1, col, visited, shipParts);
+        sunkShip(board, row, col - 1, visited, shipParts);
+        sunkShip(board, row, col + 1, visited, shipParts);
     }
 
     static void clearScreen() {
